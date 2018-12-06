@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 23492342649816102}
   - component: {fileID: 65834312306908660}
   - component: {fileID: 65137806665107908}
+  - component: {fileID: 114304932216915602}
   m_Layer: 0
   m_Name: ExitDoor
   m_TagString: Exit
@@ -109,3 +110,16 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &114304932216915602
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1071596703014648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c344a51a1d6762468a2e47821e6ff70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timerLength: 45
+  numTravellers: 20

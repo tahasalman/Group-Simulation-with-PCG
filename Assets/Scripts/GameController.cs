@@ -36,14 +36,6 @@ public class GameController : MonoBehaviour
         wait = new WaitForSeconds(travellerSpawnWaitTime);
 
         //Generate Obstacles
-        /*
-        for (int i = 0; i < numObstacles; i++)
-        {
-            int randX = rand.Next(xMin, xMax + 1);
-            int randZ = rand.Next(zMin, zMax + 1);
-            GameObject.Instantiate(obstacle, new Vector3(randX, 5, randZ), Quaternion.identity);
-        }
-        */
         generateObstacles();
         //Generate Wanderers
         StartCoroutine(generateWanderers());
@@ -54,35 +46,8 @@ public class GameController : MonoBehaviour
         // Generate Travellers
         StartCoroutine(generateTravellers());
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     private void generateObstacles()
     {
-        /*
-        float lowerB = 0.125f * screenSize;
-        print(lowerB);
-        float upperB = 0.5f * screenSize;
-        float screenToCover = (float)rand.NextDouble() * lowerB + (upperB - lowerB);
-        print(screenToCover);
-        float scaleLeft = screenToCover;
-        for (int i = 0; i < numObstacles; i++)
-        {
-            int randX = rand.Next(xMin, xMax + 1);
-            int randZ = rand.Next(zMin, zMax + 1);
-
-            float scaleZ = (float)rand.NextDouble() * scaleLeft;
-            print(scaleZ);
-            scaleLeft -= scaleZ;
-
-            GameObject g = GameObject.Instantiate(obstacle, new Vector3(randX, 5, randZ), Quaternion.identity);
-            g.transform.localScale += new Vector3(0, 0, scaleZ);
-        }
-        */
 
         List<Vector3> coordsList = new List<Vector3>();
         float lowerB = 0.15f * screenSize;
@@ -91,7 +56,7 @@ public class GameController : MonoBehaviour
         float scale = (screenToCover/numObstacles)/3;
         for (int i = 0; i < numObstacles; i++)
         {
-            int randX = rand.Next(xMin, xMax + 1);
+            int randX = rand.Next(xMin, (int)(xMax - scale*3));
             int randZ = rand.Next(zMin, zMax + 1);
 
             Vector3 coords = new Vector3(randX, 5, randZ);
@@ -135,7 +100,7 @@ public class GameController : MonoBehaviour
     {
         foreach(Vector3 coord in oldCoords)
         {
-            if (Vector3.Distance(coord, curCoord) < scale * 3 || Math.Abs(coord.x - curCoord.x) < scale*3 || curCoord.x + scale*3 > 90 || curCoord.x - scale/2 <-90)
+            if (Vector3.Distance(coord, curCoord) < scale * 3 || Math.Abs(coord.x - curCoord.x) < scale*3 || curCoord.x + scale*3 > xMax || curCoord.x - scale/2 <xMin)
                 return false;
         }
         return true;

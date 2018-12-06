@@ -399,6 +399,16 @@ Prefab:
       propertyPath: m_LocalScale.z
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 114304932216915602, guid: 69df8eaef32cc034c9aea4e8b26dc342,
+        type: 2}
+      propertyPath: timerLength
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 114304932216915602, guid: 69df8eaef32cc034c9aea4e8b26dc342,
+        type: 2}
+      propertyPath: numTravellers
+      value: 20
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 69df8eaef32cc034c9aea4e8b26dc342, type: 2}
   m_IsPrefabAsset: 0
@@ -1087,10 +1097,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54ea1b8757d3d67478350700178e1264, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numObstacles: 2
-  numTravellers: 0
-  numWanderers: 0
-  numSocialites: 50
+  numObstacles: 10
+  numTravellers: 20
+  numWanderers: 20
+  numSocialites: 30
   canSpawn: 1
   travellerSpawnWaitTime: 1
   obstacle: {fileID: 1887716839271574, guid: 5d72dd4ba6c011e4d90a8256d33049f5, type: 2}

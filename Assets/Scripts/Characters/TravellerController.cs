@@ -8,7 +8,6 @@ public class TravellerController : MonoBehaviour {
     public float averageSpeed = 1.0f;
     public float maxForce = 10;
     public float maxAvoidanceForce = 10;
-    public float fleeRadius = 15;
     public float aheadLength = 10f;
 
 
@@ -27,7 +26,7 @@ public class TravellerController : MonoBehaviour {
 
     private Timer positionTimer = new Timer(4);
     private Vector3 lastPos;
-
+    private Timer goalTimer = new Timer(45);
 	// Use this for initialization
 	void Start () {
 
@@ -47,44 +46,20 @@ public class TravellerController : MonoBehaviour {
         totalDistance = Vector3.Distance(spawnPos, goal);
 
         positionTimer.StartTimer();
+        goalTimer.StartTimer();
         lastPos = transform.position;
 	}
 	
 	// Update is called once per frame
 	void Update () {
         manageMovement();
-    }
+        goalTimer.UpdateTimer();
+        if (goalTimer.timerOver())
+        {
+            updateGoal();
+            goalTimer.StartTimer();
 
-
-    void Seek()
-    {
-        Vector3 position = transform.position - currentVelocity;
-        Vector3 desiredVelocity = Vector3.Normalize(goal - position) * tempSpeed;
-        Vector3 steering = desiredVelocity - currentVelocity;
-        steering = Vector3.ClampMagnitude(steering, maxForce);
-        steering = steering/rb.mass;
-        currentVelocity = Vector3.ClampMagnitude(steering + currentVelocity, tempSpeed);
-        transform.Translate(currentVelocity*Time.deltaTime);
-
-    }
-
-    void Flee()
-    {
-        Vector3 position = transform.position - currentVelocity;
-        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-        Vector3 steering = new Vector3(0, 0, 0);
-
-        foreach(GameObject obstacle in obstacles){
-            if (Vector3.Distance(obstacle.transform.position, transform.position) <= fleeRadius)
-            {
-                Vector3 desiredVelocity = Vector3.Normalize(position - obstacle.transform.position) * tempSpeed;
-                steering += (desiredVelocity - currentVelocity);
-            }
         }
-        steering = steering / rb.mass;
-        currentVelocity = Vector3.ClampMagnitude(steering + currentVelocity, tempSpeed);
-        transform.Translate(currentVelocity * Time.deltaTime);
-        print(currentVelocity * Time.deltaTime);
     }
 
     Vector3 getSeekForce()
@@ -92,33 +67,8 @@ public class TravellerController : MonoBehaviour {
         Vector3 position = transform.position - currentVelocity;
         Vector3 desiredVelocity = Vector3.Normalize(goal - position) * tempSpeed;
         Vector3 steering = desiredVelocity - currentVelocity;
-        float dist = Vector3.Distance(goal, position);
-        //steering *= (totalDistance - dist + 20 / totalDistance);
         return Vector3.ClampMagnitude(steering, maxForce);
     }
-
-    Vector3 getFleeForce()
-    {
-        Vector3 position = transform.position - currentVelocity;
-        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-        Vector3 steering = new Vector3(0, 0, 0);
-
-        foreach(GameObject obstacle in obstacles){
-            float distance = Vector3.Distance(obstacle.transform.position, transform.position);
-            if (distance <= fleeRadius)
-            {
-                Vector3 desiredVelocity = Vector3.Normalize(position - obstacle.transform.position) * tempSpeed;
-                Vector3 tempSteering = (desiredVelocity - currentVelocity);
-                //tempSteering *= (fleeRadius - distance + 1 / fleeRadius);
-                //if (distance <= 11)
-                //    tempSteering *= 2;
-                //tempSteering /= ((fleeRadius - distance + 1)/fleeRadius - 10);
-                steering += tempSteering;
-            }
-        }
-        return Vector3.ClampMagnitude(steering,maxForce);
-    }
-
     void Wander()
     {
         float disRadius = 5;
@@ -150,7 +100,6 @@ public class TravellerController : MonoBehaviour {
             if(Vector3.Distance(lastPos,transform.position) <= 5)
             {
                 Wander();
-                print("Wander MF");
                 return;
             }
             positionTimer.StartTimer();
@@ -190,18 +139,6 @@ public class TravellerController : MonoBehaviour {
         }
     }
 
-    private void updateAvoidanceForce(Collider other)
-    {
-        ahead = transform.position + Vector3.Normalize(currentVelocity) * aheadLength;
-        print(ahead);
-        avoidanceForce = GetComponent<BoxCollider>().bounds.ClosestPoint(ahead) - other.transform.position;
-        //avoidanceForce.x = currentVelocity.x - aheadVector - other.transform.position.x;
-        //avoidanceForce.y = currentVelocity.z - aheadVector - other.transform.position.z;
-        avoidanceForce.y = 0;
-        Vector3.Normalize(avoidanceForce);
-        avoidanceForce *= maxAvoidanceForce;
-    }
-
     private Vector3 getAvoidanceForce()
     {
         Vector3 steeringForce = new Vector3(0, 0, 0);
@@ -229,60 +166,6 @@ public class TravellerController : MonoBehaviour {
             steeringForce *= maxAvoidanceForce;
             return steeringForce;
         }
-        
-        
-        /*
-        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-        GameObject[] wanderers = GameObject.FindGameObjectsWithTag("Wanderer");
-        GameObject[] travellers = GameObject.FindGameObjectsWithTag("Traveller");
-
-        List<GameObject> collidingObjects = new List<GameObject>();
-        
-        foreach (GameObject obstacle in obstacles)
-        {
-            if (obstacle.GetComponent<Collider>().bounds.Intersects(GetComponent<Collider>().bounds))
-                collidingObjects.Add(obstacle);
-        }
-
-        foreach (GameObject wanderer in wanderers)
-        {
-            if (wanderer.GetComponent<Collider>().bounds.Intersects(GetComponent<Collider>().bounds))
-                collidingObjects.Add(wanderer);
-        }
-        foreach (GameObject traveller in travellers)
-        {
-            if (traveller.GetComponent<Collider>().bounds.Intersects(GetComponent<Collider>().bounds))
-                collidingObjects.Add(traveller);
-        }
-
-        if (collidingObjects.Count == 0)
-            return new Vector3(0, 0, 0);
-
-
-        GameObject closest = collidingObjects[0];
-        float shortestDistance = Vector3.Distance(transform.position, closest.transform.position);
-        for(int i=0; i<collidingObjects.Count; i++)
-        {
-            float distance = Vector3.Distance(collidingObjects[i].transform.position, transform.position);
-            if (distance < shortestDistance && distance != 0) 
-            {
-                closest = collidingObjects[i];
-                shortestDistance = distance; 
-            }
-        }
-
-        if (shortestDistance > aheadLength)
-            return new Vector3(0, 0, 0);
-
-        ahead = transform.position + Vector3.Normalize(currentVelocity) * aheadLength;
-        
-        Vector3 steeringForce = GetComponent<BoxCollider>().bounds.ClosestPoint(ahead) - closest.transform.position;
-        steeringForce.y = 0;
-        Vector3.Normalize(steeringForce);
-        steeringForce *= maxAvoidanceForce;
-        print(steeringForce);
-        return steeringForce;
-        */
     }
 
     private void updateGoal()

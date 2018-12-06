@@ -65,9 +65,8 @@
     <Compile Include="Assets\Scripts\Characters\TravellerController.cs" />
     <Compile Include="Assets\Scripts\Characters\WandererController.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />
-    <Compile Include="Assets\Scripts\Obstacles\CubeMaker.cs" />
     <Compile Include="Assets\Scripts\Obstacles\ObstacleMaker.cs" />
-    <Compile Include="Assets\Scripts\VoxelRenderer.cs" />
+    <Compile Include="Assets\Scripts\Testing\ExitDoorCounter.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/Taha.Salman/OneDrive - McGill University/Academics/University/Y3S1/Comp 521/Assignments/A4/Group Simulation with PCG/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
